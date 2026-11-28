@@ -3833,7 +3833,7 @@ function applyPlan() { const p = PLAN; const items = p.news.map(n => ({ id: n.id
 
 /* ---------- સેટિંગ / બેકઅપ ---------- */
 function vSet() { const th = [['leaf', 'હળવી લીલી (સફેદ કાર્ડ)'], ['mac', 'MacBook ડાર્ક'], ['navy', 'નેવી ગોલ્ડ'], ['pearl', 'પર્લ ઇન્ડિગો'], ['claude', 'Claude જેવી']];
-  return `<p class="lab">એપ</p><h2>⚙️ <i>સેટિંગ</i></h2>${typeof nbSetBox === 'function' ? nbSetBox() : ''}<div class="box" id="setBk"><h3 style="margin-top:0">💾 બેકઅપ ફાઈલ</h3><p>કુલ ${N(DB.size)} નોંધ, ${N(COURT.size)} કોર્ટ કેસ. છેલ્લો બેકઅપ: ${S.lastBackup ? D(S.lastBackup) : 'હજુ લીધો નથી'}</p><div class="row"><button class="b p" id="bkDown">બેકઅપ ફાઈલ ડાઉનલોડ</button><label class="b">બેકઅપમાંથી રિસ્ટોર<input type="file" id="bkUp" accept=".json,.gz" hidden></label></div><p class="note">બેકઅપ ફાઈલ તમારા Google Drive કે OneDrive ફોલ્ડરમાં સેવ કરો. બીજા કમ્પ્યુટર કે મોબાઈલમાં આ એપ ખોલીને "રિસ્ટોર" કરશો એટલે બધો ડેટા આવી જશે.</p></div>
+  return `<p class="lab">એપ</p><h2>⚙️ <i>સેટિંગ</i></h2>${typeof nbSetBox === 'function' ? nbSetBox() : ''}<div class="box" id="setBk"><h3 style="margin-top:0">💾 બેકઅપ ફાઈલ</h3><p>કુલ ${N(DB.size)} નોંધ, ${N(COURT.size)} કોર્ટ કેસ. છેલ્લો બેકઅપ: ${S.lastBackup ? D(S.lastBackup) : 'હજુ લીધો નથી'}</p><div class="row"><button class="b p" data-bk="save">💾 બેકઅપ ફાઈલ સેવ</button><button class="b" data-bk="share">📤 બેકઅપ શેર કરો</button><button class="b" data-bk="restore">♻️ બેકઅપમાંથી રિસ્ટોર</button><button class="b" data-bk="dir">📁 બેકઅપ ફોલ્ડર: <span class="bkdirn">${typeof bkDirName === 'function' ? esc(bkDirName()) : ''}</span></button><input type="file" id="bkUp" accept=".json,.gz" hidden></div><p class="note">એક વાર "📁 બેકઅપ ફોલ્ડર" પસંદ કરો એટલે બેકઅપ સીધો એ ફોલ્ડરમાં સેવ થશે અને "રિસ્ટોર" દબાવતાં એ જ ફોલ્ડર ખૂલશે. બીજા કમ્પ્યુટર કે મોબાઈલમાં આ એપ ખોલીને "રિસ્ટોર" કરશો એટલે બધો ડેટા આવી જશે.</p></div>
   <h3 id="setTh">🎨 થીમ</h3><div class="seg">${th.map(t => `<button data-th="${t[0]}" class="${S.theme === t[0] ? 'on' : ''}">${t[1]}</button>`).join('')}</div>
   <h3>અન્ય સેટિંગ</h3><div class="fg">${fl('પો.સ્ટે.નું નામ', `<input id="sPs" value="${esc(S.psName)}">`)}${fl('ગુ.ર.નં. ની શરૂઆત (પો.સ્ટે. કોડ)', `<input id="sPre" value="${esc(S.psPrefix)}">`)}${fl('આંકડા', `<select id="sDig"><option value="1" ${S.gujDigits ? 'selected' : ''}>ગુજરાતી (૧૨૩)</option><option value="0" ${!S.gujDigits ? 'selected' : ''}>English (123)</option></select>`)}</div>
   <div class="fg" style="grid-template-columns:1fr 1fr;margin-top:8px">${fl('હેડની યાદી (એક લીટીમાં એક; ક્રમ આ પ્રમાણે અહેવાલમાં આવશે)', `<textarea id="sHeads" style="min-height:200px">${esc(S.heads.join('\n'))}</textarea>`)}${fl('૯૦ દિવસની મુદતવાળા હેડ (૧૦ વર્ષ કે વધુ સજા); બાકીના ૬૦ દિવસ', `<textarea id="sH90" style="min-height:200px">${esc(S.heads90.join('\n'))}</textarea>`)}</div><div class="row" style="margin-top:8px"><button class="b p" id="sSave">સેટિંગ સેવ કરો</button></div>`; }
@@ -4231,7 +4231,7 @@ async function nbWelcomeCheck() { if (!window.NBHOST || !NBHOST.mountWelcome || 
   if (NBW) return; const el = document.createElement('div'); el.className = 'nbLockHost'; const sh = el.attachShadow({ mode: 'open' }); const st = document.createElement('style'); st.textContent = nbCss(); sh.appendChild(st); const box = document.createElement('div'); sh.appendChild(box); document.body.appendChild(el);
   ['keydown', 'click'].forEach(ev => el.addEventListener(ev, e => e.stopPropagation()));
   NBW = { el, root: NBHOST.mountWelcome(box) }; }
-function nbBoot() { if (!window.NBHOST) return; nbLockCheck(); nbWelcomeCheck(); nbSyncSettings(); window.addEventListener('nb:crime-changed', () => { if (NBW) nbWelcomeCheck(); }); nbFindOld(); try { nbHostEl(); nbPark(); } catch (e) { console.warn('nb mount', e); }
+function nbBoot() { bkDirLoad(); if (!window.NBHOST) return; nbLockCheck(); nbWelcomeCheck(); nbSyncSettings(); window.addEventListener('nb:crime-changed', () => { if (NBW) nbWelcomeCheck(); }); nbFindOld(); try { nbHostEl(); nbPark(); } catch (e) { console.warn('nb mount', e); }
   window.addEventListener('nb:crime-changed', async () => { try { const v = await nbMetaGet('lastBackupAt'); if (!v) return; const d = new Date(v), iso = d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); if (!S.lastBackup || iso > S.lastBackup) { S.lastBackup = iso; saveSettings(); const w = $('#bkWarn'); if (w) w.style.display = 'none'; } } catch (e) { } }); }
 
 /* ---------- એક જ કામ બે જગ્યાએ નહીં ---------- */
@@ -4278,8 +4278,10 @@ function sMenuDraw() { const m = $('#sMenu'); if (!m) return; const when = v => 
   <button class="mi" data-sm="theme"><i>🎨</i><span>થીમ</span><small>${esc((TH.find(x => x[0] === S.theme) || TH[0])[1])} ${SM_TH ? '▾' : '▸'}</small></button>
   <div class="thl ${SM_TH ? 'on' : ''}">${TH.map(x => `<button data-th="${x[0]}" class="${S.theme === x[0] ? 'on' : ''}">${S.theme === x[0] ? '✓ ' : ''}${x[1]}</button>`).join('')}</div><hr>
   <div class="mh">બેકઅપ</div>${drv}
-  <button class="mi" data-sm="bkdown"><i>💾</i><span>બેકઅપ ફાઈલ ડાઉનલોડ</span><small>${S.lastBackup ? 'છેલ્લો ' + D(S.lastBackup) : 'હજુ નહીં'}</small></button>
-  <label class="mi"><i>♻️</i><span>બેકઅપમાંથી રિસ્ટોર</span><input type="file" id="smUp" accept=".json,.gz" hidden></label><hr>
+  <button class="mi" data-bk="save"><i>💾</i><span>બેકઅપ ફાઈલ સેવ</span><small>${S.lastBackup ? 'છેલ્લો ' + D(S.lastBackup) : 'હજુ નહીં'}</small></button>
+  <button class="mi" data-bk="share"><i>📤</i><span>બેકઅપ શેર કરો</span></button>
+  <button class="mi" data-bk="restore"><i>♻️</i><span>બેકઅપમાંથી રિસ્ટોર</span></button>
+  <button class="mi" data-bk="dir"><i>📁</i><span>બેકઅપ ફોલ્ડર</span><small>${esc(bkDirName())}</small></button><hr>
   <button class="mi" data-sm="station"><i>🏢</i><span>સ્ટેશન · 🔒 PIN</span></button>
   <button class="mi" data-sm="all"><i>⚙️</i><span>બધાં સેટિંગ</span><small>▸</small></button>`; }
 async function sMenuAct(k) { const m = $('#sMenu');
@@ -4365,5 +4367,24 @@ document.addEventListener('click', e => { const t = e.target.closest('[data-mrt]
 document.addEventListener('input', e => { if (e.target.id === 'muTxt') { MU.txt = e.target.value; clearTimeout(MU._t); MU._t = setTimeout(muRefresh, 150); } });
 document.addEventListener('change', e => { if (e.target.id === 'muYr') { MU.yr = e.target.value; muRefresh(); } });
 { const st = document.createElement('style'); st.textContent = '.muchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.muchips a.c{border:1px solid var(--line);border-radius:999px;padding:3px 10px;background:var(--card);color:inherit;text-decoration:none;cursor:pointer}.mubtn{gap:8px;flex-wrap:wrap}'; document.head.appendChild(st); }
+
+/* ---------- બેકઅપ ફોલ્ડર (કમ્પ્યુટરમાં): સેવ ત્યાં જ, રિસ્ટોર વખતે એ જ ફોલ્ડર ખૂલે; શેર: Windows / મોબાઇલનું શેર મેનુ ---------- */
+let BKDIR = null;
+const bkName = () => 'dhari-crime-backup-' + today() + '.json';
+function bkDirName() { return BKDIR ? BKDIR.name : (window.showDirectoryPicker ? 'પસંદ કરો' : 'Downloads'); }
+async function bkDirLoad() { try { BKDIR = (await nbMetaGet('bkDir')) || null; } catch (e) { BKDIR = null; } $$('.bkdirn').forEach(x => x.textContent = bkDirName()); }
+async function bkPerm(h, mode) { const o = { mode }; try { if (await h.queryPermission(o) === 'granted') return true; return (await h.requestPermission(o)) === 'granted'; } catch (e) { return false; } }
+async function bkPickDir() { if (!window.showDirectoryPicker) return toast('આ બ્રાઉઝરમાં ફોલ્ડર પસંદ થતું નથી — Chrome / Edge વાપરો. બેકઅપ Downloads માં જશે.');
+  try { const h = await showDirectoryPicker({ id: 'dcbackup', mode: 'readwrite', startIn: BKDIR || 'documents' }); BKDIR = h; await nbMetaSet('bkDir', h); $$('.bkdirn').forEach(x => x.textContent = h.name); if ($('#sMenu.on')) sMenuDraw(); toast('બેકઅપ ફોલ્ડર: ' + h.name); } catch (e) { } }
+async function bkSave() { const h = BKDIR; const ok = h ? await bkPerm(h, 'readwrite') : false; const b = await fullBackupBlob(); const name = bkName();
+  if (ok) { try { const fh = await h.getFileHandle(name, { create: true }); const w = await fh.createWritable(); await w.write(b); await w.close(); didBackup(); return toast('બેકઅપ સેવ થયો: ' + h.name + ' \\ ' + name); } catch (e) { console.warn('bk dir', e); } }
+  saveBlob(b, name); didBackup(); }
+async function bkShare() { const b = await fullBackupBlob(); const f = new File([b], bkName(), { type: 'application/json' });
+  if (navigator.canShare && navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f], title: 'ક્રાઈમ રેકોર્ડ બેકઅપ', text: (S.psName || '') + ' પો.સ્ટે. ક્રાઈમ રેકોર્ડ બેકઅપ ' + D(today()) }); didBackup(); } catch (e) { } return; }
+  saveBlob(b, f.name); toast('આ બ્રાઉઝરમાં શેર મેનુ ખૂલતું નથી — ફાઈલ ડાઉનલોડ કરી છે'); }
+async function bkRestore() { if (window.showOpenFilePicker) { try { if (BKDIR) await bkPerm(BKDIR, 'read'); const [fh] = await showOpenFilePicker({ id: 'dcbackup', startIn: BKDIR || 'downloads', types: [{ description: 'ક્રાઈમ રેકોર્ડ બેકઅપ', accept: { 'application/json': ['.json'], 'application/gzip': ['.gz'] } }] }); return restore(await fh.getFile()); } catch (e) { if (e && e.name === 'AbortError') return; } }
+  const i = $('#bkUp') || Object.assign(document.createElement('input'), { type: 'file', accept: '.json,.gz', id: 'bkUpX', hidden: true }); if (!i.parentNode) { document.body.appendChild(i); i.addEventListener('change', () => { if (i.files[0]) restore(i.files[0]); i.value = ''; }); } i.click(); }
+document.addEventListener('click', e => { const t = e.target.closest('[data-bk]'); if (!t) return; e.stopPropagation(); const m = $('#sMenu'); if (m) m.classList.remove('on');
+  ({ save: bkSave, share: bkShare, restore: bkRestore, dir: bkPickDir })[t.dataset.bk](); }, true);
 
 </script><script>if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});</script></body></html>
