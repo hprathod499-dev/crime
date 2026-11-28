@@ -587,9 +587,31 @@ body.sCol header#side .sProf{justify-content:center;padding:6px 0}
 html.gujd body{font-family:GujDigits,"Noto Sans Gujarati","Shruti","Nirmala UI","Segoe UI",system-ui,sans-serif}
 html.gujd[data-theme=mac] body{font-family:GujDigits,-apple-system,"SF Pro Text","Noto Sans Gujarati","Shruti","Nirmala UI","Segoe UI",sans-serif}
 html.gujd[data-theme=claude] header h1,html.gujd[data-theme=claude] h1,html.gujd[data-theme=claude] h2,html.gujd[data-theme=claude] h3,html.gujd[data-theme=claude] .cards .stat .n,html.gujd[data-theme=claude] .cards .stat .n a{font-family:GujDigits,var(--hfont)}
+/* ===== ઉપર જમણે: આખી એપનું શોધ સાધન (દરેક પાને / ખૂલેલી વિગત ઉપર પણ દેખાય) ===== */
+#gFind{position:fixed;top:10px;right:16px;width:min(420px,calc(100vw - var(--sw) - 40px));z-index:70;display:flex;align-items:center;gap:6px;background:var(--card);border:2px solid var(--acc);border-radius:14px;padding:4px 10px;box-shadow:0 0 0 4px color-mix(in srgb,var(--acc) 22%,transparent),0 8px 24px rgba(0,0,0,.18);box-sizing:border-box}
+#gFind:focus-within{box-shadow:0 0 0 5px color-mix(in srgb,var(--acc) 35%,transparent),0 10px 28px rgba(0,0,0,.22)}
+#gFind .gfi{font-size:18px}
+#gFind #gq{flex:1;border:0!important;background:transparent!important;outline:none;font-size:15.5px;font-weight:600;padding:7px 2px;min-width:0;color:var(--ink);box-shadow:none!important}
+#gFind kbd{font:11px/1 system-ui,sans-serif;color:var(--mut);border:1px solid var(--line);border-radius:5px;padding:3px 5px;white-space:nowrap}
+#gRes{position:absolute;top:calc(100% + 6px);right:0;width:min(560px,calc(100vw - 24px));max-height:min(70vh,620px);overflow:auto;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:12px;box-shadow:0 16px 40px rgba(0,0,0,.25);display:none;padding:6px}
+#gRes.on{display:block}
+#gRes .gh{font-size:11.5px;font-weight:700;color:var(--mut);padding:8px 10px 3px}
+#gRes .gi{display:block;padding:8px 10px;border-radius:9px;cursor:pointer;line-height:1.35}
+#gRes .gi:hover,#gRes .gi.sel{background:var(--soft)}
+#gRes .gi b{font-size:15px}
+#gRes .gi .gm{font-size:12px;color:var(--mut);margin-left:6px}
+#gRes .gi .gx{display:block;font-size:12.5px;color:var(--mut);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#gRes .gi mark{background:color-mix(in srgb,var(--gold) 55%,transparent);color:inherit;border-radius:3px;padding:0 1px}
+#gRes .gall{font-weight:700;color:var(--acc);text-align:center}
+#gRes .gnone{padding:14px;color:var(--mut);text-align:center}
+main{padding-top:64px}
+@media(max-width:760px){#gFind{top:8px;left:58px;right:8px;width:auto}#gFind kbd{display:none}#gRes{right:-8px;width:calc(100vw - 16px)}}
+@media print{#gFind{display:none!important}}
+/* શોધ સાધન ખૂલેલી વિગતનાં બટન ઢાંકે નહીં */
+#modal{padding-top:72px!important}
+@media(min-width:761px){.warnb{padding-right:450px!important}}
 </style></head><body>
 <header id="side"><div class="sTop"><button class="sTog" id="sTog" title="સાઇડબાર નાની / મોટી">☰</button><h1>ધારી પો.સ્ટે.<small>ક્રાઈમ રેકોર્ડ</small></h1></div>
-<span class="qbox"><input id="qNo" placeholder="ગુ.ર.નં. દા.ત. 34 કે 34/25"><button class="b g" id="qGo" title="ગુનો ખોલો">⚡</button></span>
 <nav><button data-v="dash"><i>📊</i><span>ડેશબોર્ડ</span></button><button data-v="cal"><i>📅</i><span>કેલેન્ડર</span></button>
 <p class="nsec">પત્રકો</p><button data-v="rep"><i>📚</i><span>એન્યુઅલ બુક</span></button><button data-v="mrep"><i>📄</i><span>માસિક અહેવાલ</span></button><button data-v="list"><i>📁</i><span>ગુના</span></button><button data-v="nb"><i>🗂️</i><span>વધુ પત્રકો</span></button><button data-v="acc"><i>🔎</i><span>આરોપી શોધ</span></button><button data-v="court"><i>⚖️</i><span>કોર્ટ કેસ</span><b class="nbadge" id="bdCC" data-ccmiss title="ચાર્જશીટ થઈ ગઈ, CC / SC નંબર બાકી" hidden></b></button><button data-v="todo"><i>⏳</i><span>બાકી કામ</span></button>
 <p class="nsec">ડેટા</p><button data-v="imp"><i>📥</i><span>ઈમ્પોર્ટ</span></button></nav>
@@ -597,7 +619,7 @@ html.gujd[data-theme=claude] header h1,html.gujd[data-theme=claude] h1,html.gujd
 <div class="sBot"><div class="ur"><button class="b" id="bUndo" title="Undo (Ctrl+Z)">↶</button><button class="b" id="bRedo" title="Redo (Ctrl+Y)">↷</button></div>
 <button class="sGear" id="sGear" title="સેટિંગ"><i>⚙️</i><span>સેટિંગ</span><b class="gdot" id="gDot"></b></button>
 <div class="sProf"><i>🚔</i><span id="sProfT">ધારી પો.સ્ટે.</span></div></div></header>
-<div id="sMenu" class="smenu"></div><button id="mTog" class="mtog" title="મેનુ">☰</button><div id="sScrim"></div>
+<div id="gFind"><span class="gfi">🔍</span><input id="gq" autocomplete="off" spellcheck="false" placeholder="શોધો: ગુ.ર.નં. ૮૨૫ / ૩૪/૨૫, આરોપી, ફરિયાદી, ગામ…" title="Ctrl+K"><kbd>Ctrl K</kbd><div id="gRes"></div></div><div id="sMenu" class="smenu"></div><button id="mTog" class="mtog" title="મેનુ">☰</button><div id="sScrim"></div>
 <div class="warnb" id="bkWarn" style="display:none">છેલ્લા ૭ દિવસમાં બેકઅપ લીધો નથી. નીચે ડાબી બાજુ ⚙️ સેટિંગ માંથી બેકઅપ લો.</div>
 <main id="main"></main><div id="modal"></div><div id="toast"></div><div id="printArea"></div><datalist id="heads"></datalist>
 <script type="text/plain" id="ocrCore">
@@ -4422,5 +4444,40 @@ document.addEventListener('click', e => { const b = e.target.closest('#qPol butt
   if (next === 'CS' && /^[ABC]$/.test(prev || '') && !$('#qPrevT').value && !$('#qPrevNo').value) { $('#qPrevT').value = prev; $('#qPrevNo').value = $('#qPNo').value; $('#qPrevDate').value = $('#qPDate').value; $('#qPNo').value = ''; $('#qPDate').value = ''; setTimeout(() => $('#qPNo').focus(), 0); } }, true);
 /* આરોપીનું નામ લખતાં જાતિ ખાલી હોય તો નામ પરથી આપોઆપ */
 document.addEventListener('input', e => { const t = e.target; if (!t.matches || !t.matches('#qAcc [data-f=name]')) return; const row = t.closest('[data-ai]'); const g = row && row.querySelector('[data-f=gender]'); if (!g || (g.value && !g.dataset.auto)) return; const v = genderOf(t.value); if (v) { g.value = v; g.dataset.auto = '1'; } });
+
+/* ---------- ઉપર જમણે: આખી એપનું શોધ સાધન ----------
+   ગુ.ર.નં.: છેલ્લા બે આંકડા હંમેશા વર્ષ, આગળના આંકડા ગુના નંબર (૮૨૫ = ૮/૨૦૨૫, ૧૨૩૪૨૬ = ૧૨૩૪/૨૦૨૬); ૧-૨ આંકડા = દરેક વર્ષનો એ નંબર.
+   બાકી કંઈ પણ (ગુજરાતી / અંગ્રેજી / આંકડા): આરોપી, ફરિયાદી, ગામ, કલમ, હેડ, ટૂંક વિગત, ત.ક.અ. … બધામાં તરત શોધ. */
+const GF = { sel: -1, items: [] };
+const GF_FIELDS = [['accused', 'આરોપી'], ['complainant', 'ફરિયાદી'], ['place', 'સ્થળ'], ['deceased', 'મરનાર'], ['missing', 'ગુમ થનાર'], ['io', 'ત.ક.અ.'], ['brief', 'ટૂંક વિગત'], ['gb', 'બનાવ'], ['disposal', 'નિકાલ'], ['arrest', 'અટક']];
+function gfNums(q) { let kind = ''; let t = toAscii(sq(q)); for (const [re, k] of MU_KIND) if (re.test(t)) { kind = k; t = t.replace(re, '').trim(); break; }
+  let m = /^(\d{1,6})\s*[\/\-.]\s*(\d{2}|\d{4})$/.exec(t); if (m) { const y = m[2].length === 2 ? 2000 + +m[2] : +m[2]; return { kind, list: [[+m[1], y]] }; }
+  m = /^\d+$/.exec(t); if (!m) return null; if (t.length >= 3) return { kind, list: [[+t.slice(0, -2), 2000 + +t.slice(-2)]] };
+  const yrs = [...new Set(all().map(r => r.year))].sort((a, b) => b - a); return { kind, list: yrs.map(y => [+t, y]) }; }
+function gfEsc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+function gfSnip(r, q) { const R = r.raw || {}; const toks = toAscii(sq(q)).toLowerCase().split(/\s+/).filter(x => x.length >= 2);
+  for (const [k, lab] of GF_FIELDS) { const v = R[k]; if (!v) continue; const a = toAscii(v).toLowerCase(); for (const t of toks) { const i = a.indexOf(t); if (i < 0) continue; const s0 = Math.max(0, i - 40), txt = v.slice(s0, i + t.length + 60); const hl = esc(txt).replace(new RegExp(gfEsc(esc(v.slice(i, i + t.length))), 'i'), x => '<mark>' + x + '</mark>'); return lab + ': ' + (s0 ? '…' : '') + hl + '…'; } }
+  const acc = (r.acc || []).map(a => a.name).filter(Boolean).join(', '); return acc ? 'આરોપી: ' + esc(acc) : esc((R.complainant || R.brief || '').slice(0, 90)); }
+function gfLine(r) { const st = status(r); return `${r.kind === 'FIR' ? PART[r.part || ''] + ' · ' : ''}${esc(r.head || KIND[r.kind] || '')}${r.dReg ? ' · ' + D(r.dReg) : ''}${r.kind === 'FIR' ? ' · ' + (st.detected ? 'ડીટેક્ટ' : 'અનડીટેક્ટ') : ''}`; }
+function gfSearch(q) { const out = []; q = sq(q); if (!q) return out; const seen = new Set();
+  const nm = gfNums(q); if (nm) { const kinds = nm.kind ? [nm.kind] : ['FIR', 'AD', 'JJ', 'GUM']; nm.list.forEach(([n, y]) => kinds.forEach(k => { const r = DB.get(recId(k, y, n)); if (r && !seen.has(r.id)) { seen.add(r.id); out.push({ g: 'ગુ.ર.નં.', r, x: gfLine(r) }); } })); }
+  const qa = toAscii(q); if (!(nm && out.length && /^\d+(\s*[\/\-.]\s*\d+)?$/.test(qa.replace(/^\D+/, '')))) { const qm = q.replace(/[()\[\],;]+/g, ' '); const hits = []; for (const r of DB.values()) { if (seen.has(r.id)) continue; if (match(r, qm) || (r.sections && toAscii(r.sections).replace(/\s+/g, '').includes(qa.replace(/\s+/g, '')))) hits.push(r); } hits.sort((a, b) => b.year - a.year || b.serial - a.serial);
+    hits.slice(0, 40).forEach(r => out.push({ g: 'વિગતમાં મળ્યું (' + N(hits.length) + ')', r, x: gfSnip(r, q), total: hits.length })); }
+  return out; }
+function gfDraw() { const box = $('#gRes'), q = $('#gq').value; if (!sq(q)) { box.classList.remove('on'); return; } const L = gfSearch(q); GF.items = L; GF.sel = L.length ? 0 : -1; let h = '', last = '';
+  L.forEach((it, i) => { if (it.g !== last) { h += `<div class="gh">${it.g}</div>`; last = it.g; } h += `<div class="gi ${i === GF.sel ? 'sel' : ''}" data-gi="${i}"><b>${esc(noTxt(it.r))}</b><span class="gm">${it.x && it.g.startsWith('ગુ.ર') ? it.x : gfLine(it.r)}</span>${it.g.startsWith('ગુ.ર') ? '' : `<span class="gx">${it.x}</span>`}</div>`; });
+  const tot = (L.find(x => x.total) || {}).total || 0; if (tot > 40) h += `<div class="gi gall" data-gall>બધા ${N(tot)} પરિણામ "ગુના" યાદીમાં જુઓ →</div>`;
+  if (!L.length) h = `<div class="gnone">"${esc(q)}" — કંઈ મળ્યું નહીં</div>`; box.innerHTML = h; box.classList.add('on'); }
+function gfOpen(i) { const it = GF.items[i]; if (!it) return; $('#gRes').classList.remove('on'); $('#gq').blur(); if ($('#sMenu')) $('#sMenu').classList.remove('on'); openRec(it.r.id, 'r'); }
+function gfAll() { const q = $('#gq').value; $('#gRes').classList.remove('on'); LIST = { q, ids: null, title: '', kind: '', part: '', st: '' }; P.preset = 'all'; P.sub = 0; go('list'); }
+document.addEventListener('input', e => { if (e.target.id !== 'gq') return; clearTimeout(GF.t); GF.t = setTimeout(gfDraw, 120); }, true);
+document.addEventListener('focusin', e => { if (e.target.id === 'gq' && sq(e.target.value)) gfDraw(); });
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) { e.preventDefault(); e.stopPropagation(); const q = $('#gq'); q.focus(); q.select(); return; }
+  if (e.target.id !== 'gq') return; e.stopPropagation(); const n = GF.items.length;
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); if (!n) return; GF.sel = (GF.sel + (e.key === 'ArrowDown' ? 1 : n - 1)) % n; $$('#gRes .gi[data-gi]').forEach((x, i) => x.classList.toggle('sel', i === GF.sel)); const s = $('#gRes .gi.sel'); if (s) s.scrollIntoView({ block: 'nearest' }); }
+  else if (e.key === 'Enter') { e.preventDefault(); if (!$('#gRes.on')) gfDraw(); if (GF.items.length) gfOpen(Math.max(0, GF.sel)); else toast('કંઈ મળ્યું નહીં'); }
+  else if (e.key === 'Escape') { $('#gRes').classList.remove('on'); e.target.blur(); } }, true);
+document.addEventListener('mousedown', e => { const gi = e.target.closest('#gRes [data-gi]'); if (gi) { e.preventDefault(); return gfOpen(+gi.dataset.gi); } if (e.target.closest('#gRes [data-gall]')) { e.preventDefault(); return gfAll(); } if (!e.target.closest('#gFind')) { const r = $('#gRes'); if (r) r.classList.remove('on'); } }, true);
 
 </script><script>if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});</script></body></html>
