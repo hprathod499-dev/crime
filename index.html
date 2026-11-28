@@ -610,6 +610,17 @@ main{padding-top:64px}
 /* શોધ સાધન ખૂલેલી વિગતનાં બટન ઢાંકે નહીં */
 #modal{padding-top:72px!important}
 @media(min-width:761px){.warnb{padding-right:450px!important}}
+/* ===== કેલેન્ડર નાનું: તારીખ અને કુલ આંકડો વચ્ચે, પ્રકારના રંગનાં ટપકાં; નીચે વિગત સહેલાઈથી દેખાય ===== */
+.calg{max-width:560px;gap:5px!important}
+.calg .wd{font-size:12px;padding:2px 0}
+.calg .cd{min-height:0!important;height:52px;padding:4px!important;align-items:center;justify-content:center;gap:0!important;border-radius:10px;text-align:center}
+.calg .cd:hover{transform:none}
+.calg .cd .dn{font-size:15px!important;line-height:1.1}
+.calg .cd .dt{position:static;font-size:12px;font-weight:700;color:var(--acc)}
+.calg .cd .ck{position:absolute;top:4px;right:5px;gap:2px;flex-wrap:nowrap;max-width:60%;overflow:hidden}
+.calg .cd .ck i{font-size:0!important;width:7px;height:7px;padding:0!important;border-radius:50%}
+@media(max-width:760px){.calg{max-width:none}.calg .cd{height:46px}}
+html.gujd h1,html.gujd h2,html.gujd h3,html.gujd h4,html.gujd .cards .stat .n{font-family:GujDigits,var(--hfont)}
 </style></head><body>
 <header id="side"><div class="sTop"><button class="sTog" id="sTog" title="સાઇડબાર નાની / મોટી">☰</button><h1>ધારી પો.સ્ટે.<small>ક્રાઈમ રેકોર્ડ</small></h1></div>
 <nav><button data-v="dash"><i>📊</i><span>ડેશબોર્ડ</span></button><button data-v="cal"><i>📅</i><span>કેલેન્ડર</span></button>
@@ -619,7 +630,7 @@ main{padding-top:64px}
 <div class="sBot"><div class="ur"><button class="b" id="bUndo" title="Undo (Ctrl+Z)">↶</button><button class="b" id="bRedo" title="Redo (Ctrl+Y)">↷</button></div>
 <button class="sGear" id="sGear" title="સેટિંગ"><i>⚙️</i><span>સેટિંગ</span><b class="gdot" id="gDot"></b></button>
 <div class="sProf"><i>🚔</i><span id="sProfT">ધારી પો.સ્ટે.</span></div></div></header>
-<div id="gFind"><span class="gfi">🔍</span><input id="gq" autocomplete="off" spellcheck="false" placeholder="શોધો: ગુ.ર.નં. ૮૨૫ / ૩૪/૨૫, આરોપી, ફરિયાદી, ગામ…" title="Ctrl+K"><kbd>Ctrl K</kbd><div id="gRes"></div></div><div id="sMenu" class="smenu"></div><button id="mTog" class="mtog" title="મેનુ">☰</button><div id="sScrim"></div>
+<div id="gFind"><span class="gfi">🔍</span><input id="gq" autocomplete="off" spellcheck="false" placeholder="શોધો: ગુ.ર.નં. ૮૨૫, નામ, ગામ…" title="Ctrl+K"><kbd>Ctrl K</kbd><div id="gRes"></div></div><div id="sMenu" class="smenu"></div><button id="mTog" class="mtog" title="મેનુ">☰</button><div id="sScrim"></div>
 <div class="warnb" id="bkWarn" style="display:none">છેલ્લા ૭ દિવસમાં બેકઅપ લીધો નથી. નીચે ડાબી બાજુ ⚙️ સેટિંગ માંથી બેકઅપ લો.</div>
 <main id="main"></main><div id="modal"></div><div id="toast"></div><div id="printArea"></div><datalist id="heads"></datalist>
 <script type="text/plain" id="ocrCore">
