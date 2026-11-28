@@ -4125,7 +4125,9 @@ function nbGoTab(t) { if (t === 'set') return go('set'); if (t === 'rep') return
 const NBT = [['csreg', '📋 ચાર્જશીટ રજિસ્ટર'], ['inp', '✍️ માસિક વિગત'], ['pr', '🍾 પ્રોહી / દારૂ'], ['flt', '🔎 ફિલ્ટર / માહિતી'], ['yc', '⚖️ વર્ષ સરખામણી'], ['io', '👮 ત.ક.અ. મુજબ પેન્ડીંગ']];
 let NBT_CUR = (() => { try { const v = sessionStorage.getItem('dc_nb_t'); return NBT.some(x => x[0] === v) ? v : 'csreg'; } catch (e) { return 'csreg'; } })();
 VIEWS.nb = () => `<p class="lab">ચાર્જશીટ રજિસ્ટર, માસિક વિગત, પ્રોહી, ફિલ્ટર, ત.ક.અ. મુજબ પેન્ડીંગ</p><h2>વધુ <i>પત્રકો</i></h2><div class="nbtabs">${NBT.map(t => `<button data-nbt="${t[0]}" class="${NBT_CUR === t[0] ? 'on' : ''}">${t[1]}</button>`).join('')}</div>` + (NBT_CUR === 'csreg' ? vCsReg() : window.NBHOST ? `<div id="nbSlot" data-mode="${NBT_CUR}"></div>` : '<p>આ ભાગ ખૂલ્યો નહીં.</p>');
-VIEWS.mrep = () => `<p class="lab">પત્રક</p><h2>📄 માસિક <i>અહેવાલ</i></h2>` + (window.NBHOST ? '<div id="nbSlot" data-mode="rep"></div>' : '<p>આ ભાગ ખૂલ્યો નહીં.</p>');
+const MRT = [['rep', '📄 માસિક અહેવાલ'], ['multi', '🧾 ઘણા ગુનાના ઉતારા / B સ્ટેટમેન્ટ']];
+let MRT_CUR = (() => { try { return sessionStorage.getItem('dc_mr_t') === 'multi' ? 'multi' : 'rep'; } catch (e) { return 'rep'; } })();
+VIEWS.mrep = () => `<p class="lab">પત્રક</p><h2>📄 માસિક <i>અહેવાલ</i></h2><div class="nbtabs">${MRT.map(t => `<button data-mrt="${t[0]}" class="${MRT_CUR === t[0] ? 'on' : ''}">${t[1]}</button>`).join('')}</div>` + (MRT_CUR === 'multi' ? vMulti() : window.NBHOST ? '<div id="nbSlot" data-mode="rep"></div>' : '<p>આ ભાગ ખૂલ્યો નહીં.</p>');
 function nbSetBox() { return window.NBHOST ? '<div id="setDrive"><h3>☁️ Google Drive · 🏢 સ્ટેશન · 🔒 PIN</h3><div id="nbSlot" data-mode="set"></div></div>' : ''; }
 
 /* ---------- PIN: એપ ખૂલે ત્યારે ---------- */
@@ -4320,5 +4322,49 @@ function vCsReg() { const { a, b, rows, nod } = csrData(); const by = k => rows.
 document.addEventListener('click', e => { if (!e.target.closest('#csrOut')) return; const { rows } = csrData(); const per = perLabel(PSTATE.PC);
   const cnts = CSR_T.map(([k, l]) => `${l}: ${N(rows.filter(x => x.k === k).length)}`).join(' · ');
   output('view', `<h3 style="text-align:center;margin:0">${esc(S.psName || '')} પો.સ્ટે. — ચાર્જશીટ રજિસ્ટર</h3><p style="text-align:center;margin:4px 0">${esc(per)}</p><p>${cnts} · કુલ: ${N(rows.length)}</p>${csrTable(rows, true)}`, 'ચાર્જશીટ રજિસ્ટર — ' + per); });
+
+/* ---------- ઘણા ગુનાના ઉતારા / B સ્ટેટમેન્ટ એક સાથે ---------- */
+const MU = { txt: '', yr: '' };
+const MU_KIND = [[/^(?:અ\.?\s*મો(?:ત)?\.?|ad)\s*/i, 'AD'], [/^(?:જા\.?\s*જો(?:ગ)?\.?|જાણવા\s*જોગ|jj)\s*/i, 'JJ'], [/^(?:ગુમ|gum)\s*/i, 'GUM'], [/^(?:ગુ\.?\s*ર\.?\s*નં\.?|fir)\s*/i, 'FIR']];
+function muParse(txt, defYr) { const out = [], bad = [], seen = new Set(); const yy = y => { y = +y; return y < 100 ? 2000 + y : y; };
+  const parts = toAscii(txt || '').replace(/[;\n]+/g, ',').split(',').map(x => x.trim()).filter(Boolean);
+  for (let p of parts) { let kind = 'FIR'; for (const [re, k] of MU_KIND) if (re.test(p)) { kind = k; p = p.replace(re, ''); break; }
+    p.split(/\s+/).filter(Boolean).forEach(tok => { const m = /^(\d{1,4})(?:\s*[-–]\s*(\d{1,4}))?(?:\/(\d{2,4}))?$/.exec(tok); if (!m) { bad.push(tok); return; }
+      const y = m[3] ? yy(m[3]) : defYr, a = +m[1], b = m[2] ? +m[2] : a; if (b < a || b - a > 500) { bad.push(tok); return; }
+      for (let n = a; n <= b; n++) { const id = kind + ':' + y + ':' + n; if (seen.has(id)) continue; seen.add(id); out.push({ id, label: (kind === 'FIR' ? '' : KIND[kind] + ' ') + n + '/' + String(y).slice(2) }); } }); }
+  return { ids: out, bad }; }
+function muState() { const yrs = [...new Set(all().map(r => r.year))].sort((a, b) => b - a); const defYr = +MU.yr || yrs[0] || +today().slice(0, 4); const P = muParse(MU.txt, defYr);
+  const recs = P.ids.map(x => DB.get(x.id)).filter(Boolean); const miss = P.ids.filter(x => !DB.has(x.id)).map(x => x.label); return { yrs, defYr, recs, miss, bad: P.bad }; }
+function vMulti() { const { yrs, defYr, recs, miss, bad } = muState(); const fir = recs.filter(r => r.kind === 'FIR');
+  const btns = w => `<div class="row mubtn"><button class="b p" data-mu="${w}:view">👁 જુઓ</button><button class="b" data-mu="${w}:pdf">📕 PDF</button><button class="b" data-mu="${w}:doc">📘 Word</button><button class="b" data-mu="${w}:prt">🖨 પ્રિન્ટ</button></div>`;
+  return `<div class="box"><p style="margin-top:0">ગુ.ર.નં. લખો — અલ્પવિરામ (,) કે જગ્યા મૂકીને જેટલા જોઈએ તેટલા. દા.ત. <b>34, 56, 101-105, 12/25</b> · અ.મોત માટે <b>અ.મોત 5/26</b>, જાણવા જોગ <b>જા.જો. 7</b>, ગુમ <b>ગુમ 3</b>. વર્ષ ન લખો તો નીચે પસંદ કરેલ વર્ષ ગણાશે.</p>
+  <div class="row" style="align-items:flex-start"><textarea id="muTxt" style="flex:1;min-height:70px" placeholder="34, 56, 101-105, 12/25">${esc(MU.txt)}</textarea><label style="display:flex;flex-direction:column;gap:4px">વર્ષ<select id="muYr">${yrs.map(y => `<option value="${y}" ${y === defYr ? 'selected' : ''}>${N(y)}</option>`).join('')}</select></label></div>
+  <div id="muInfo">${muInfo(recs, miss, bad)}</div></div>
+  <div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))"><div class="box"><h3 style="margin-top:0">🧾 ઉતારા <small class="note" id="muN1">(${N(recs.length)} નોંધ)</small></h3>${btns('ut')}</div><div class="box"><h3 style="margin-top:0">📄 B સ્ટેટમેન્ટ <small class="note" id="muN2">(${N(fir.length)} ગુના)</small></h3>${btns('bs')}<p class="note" style="margin:6px 0 0">B સ્ટેટમેન્ટ ફક્ત ગુના (FIR) માટે બને છે.</p></div></div>`; }
+function muInfo(recs, miss, bad) { return (recs.length ? `<div class="muchips">${recs.map(r => `<a class="c" data-open="${esc(r.id)}">${esc(noTxt(r))}${r.kind === 'FIR' && r.part ? ' <small>(' + esc(r.part) + ')</small>' : ''}</a>`).join('')}</div>` : '<p class="note">હજુ કોઈ ગુનો પસંદ નથી.</p>')
+  + (miss.length ? `<p style="color:var(--bad);margin:6px 0 0">એપમાં નથી: ${miss.map(esc).join(', ')}</p>` : '') + (bad.length ? `<p style="color:var(--bad);margin:6px 0 0">સમજાયું નહીં: ${bad.map(esc).join(', ')}</p>` : ''); }
+function muRefresh() { const { recs, miss, bad } = muState(); const i = $('#muInfo'); if (i) i.innerHTML = muInfo(recs, miss, bad); const a = $('#muN1'), b = $('#muN2'); if (a) a.textContent = '(' + N(recs.length) + ' નોંધ)'; if (b) b.textContent = '(' + N(recs.filter(r => r.kind === 'FIR').length) + ' ગુના)'; }
+/* HTML (ઉતારો / B સ્ટેટમેન્ટ) → Word ના ભાગ */
+function htmlBlocks(html) { const d = document.createElement('div'); d.innerHTML = html; const root = d.querySelector('.doc') || d; const out = [];
+  root.querySelectorAll(':scope > h3, :scope > h4, :scope > table, :scope > p').forEach(el => { if (el.tagName === 'TABLE') { const rows = [...el.rows].map(tr => [...tr.cells].map(c => c.innerText.trim())); if (!rows.length) return; const n = Math.max(...rows.map(r => r.length));
+      const len = Array.from({ length: n }, (_, i) => Math.min(60, Math.max(4, ...rows.map(r => (r[i] || '').length / 3)))); const tot = len.reduce((a, b) => a + b, 0);
+      const bold = rows[0].length === 3 && /^[૦-૯0-9]+$/.test(rows[0][0]) ? 1 : -1; out.push({ table: rows.map(r => r.concat(Array(n - r.length).fill(''))), widths: len.map(x => x / tot), head: el.rows[0].querySelector('th') ? 1 : 0, boldCol: bold }); }
+    else out.push({ h: el.innerText.trim(), sz: el.tagName === 'H3' ? 28 : 24, c: el.tagName === 'H3' ? 1 : 0 }); });
+  return out; }
+async function muAct(what, how) { const { recs } = muState(); const list = what === 'bs' ? recs.filter(r => r.kind === 'FIR') : recs; if (!list.length) return toast(what === 'bs' ? 'કોઈ ગુનો (FIR) પસંદ નથી' : 'કોઈ ગુનો પસંદ નથી');
+  const ttl = what === 'bs' ? 'બી સ્ટેટમેન્ટ' : 'ઉતારા'; const html = what === 'bs' ? bstHtml(list, true) : utaraHtml(list); const land = what !== 'bs';
+  const nm = (what === 'bs' ? 'b-statement-' : 'utara-') + (list.length === 1 ? list[0].serial + '-' + list[0].year : list.length + '-gunha') + '-' + today();
+  if (how === 'view') return output('view', html, ttl + ' (' + N(list.length) + ')');
+  if (how === 'prt') return output('pdf', html, ttl);
+  if (how === 'doc') return saveBlob(DOCX.build(htmlBlocks(html), { landscape: land }), nm + '.docx');
+  if (how === 'pdf') { pdfPop('<div class="pt">PDF બને છે… (' + N(list.length) + ')</div><div class="spin"></div>');
+    try { const blob = await MPDF.fromHtml(html, { landscape: land }); PDFB = { blob, name: nm + '.pdf' }; pdfPop(`<div class="pt">PDF તૈયાર</div><div class="pb"><button id="pdfView">👁 જુઓ</button><button id="pdfDl">⬇ ડાઉનલોડ</button><button id="pdfSend" class="snd">📤 મોકલો</button></div>`); }
+    catch (e) { pdfPop(`<div class="pt">PDF બની નહીં</div><p class="note">${esc(e.message || e)}<br>"🖨 પ્રિન્ટ" થી "Save as PDF" કરો.</p><div class="pb"><button onclick="pdfPopClose()">બંધ કરો</button></div>`); } } }
+document.addEventListener('click', e => { const t = e.target.closest('[data-mrt],[data-mu]'); if (!t) return;
+  if (t.dataset.mrt) { MRT_CUR = t.dataset.mrt; try { sessionStorage.setItem('dc_mr_t', MRT_CUR); } catch (er) { } return render(); }
+  const [w, h] = t.dataset.mu.split(':'); muAct(w, h); });
+document.addEventListener('input', e => { if (e.target.id === 'muTxt') { MU.txt = e.target.value; clearTimeout(MU._t); MU._t = setTimeout(muRefresh, 150); } });
+document.addEventListener('change', e => { if (e.target.id === 'muYr') { MU.yr = e.target.value; muRefresh(); } });
+{ const st = document.createElement('style'); st.textContent = '.muchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.muchips a.c{border:1px solid var(--line);border-radius:999px;padding:3px 10px;background:var(--card);color:inherit;text-decoration:none;cursor:pointer}.mubtn{gap:8px;flex-wrap:wrap}'; document.head.appendChild(st); }
 
 </script><script>if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});</script></body></html>
