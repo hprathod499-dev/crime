@@ -3833,7 +3833,7 @@ function applyPlan() { const p = PLAN; const items = p.news.map(n => ({ id: n.id
 
 /* ---------- સેટિંગ / બેકઅપ ---------- */
 function vSet() { const th = [['leaf', 'હળવી લીલી (સફેદ કાર્ડ)'], ['mac', 'MacBook ડાર્ક'], ['navy', 'નેવી ગોલ્ડ'], ['pearl', 'પર્લ ઇન્ડિગો'], ['claude', 'Claude જેવી']];
-  return `<p class="lab">એપ</p><h2>⚙️ <i>સેટિંગ</i></h2>${typeof nbSetBox === 'function' ? nbSetBox() : ''}<div class="box" id="setBk"><h3 style="margin-top:0">💾 બેકઅપ ફાઈલ</h3><p>કુલ ${N(DB.size)} નોંધ, ${N(COURT.size)} કોર્ટ કેસ. છેલ્લો બેકઅપ: ${S.lastBackup ? D(S.lastBackup) : 'હજુ લીધો નથી'}</p><div class="row"><button class="b p" id="bkDown">બેકઅપ ફાઈલ ડાઉનલોડ</button>${navigator.canShare ? '<button class="b" id="bkShare">Drive / OneDrive માં શેર</button>' : ''}<label class="b">બેકઅપમાંથી રિસ્ટોર<input type="file" id="bkUp" accept=".json,.gz" hidden></label></div><p class="note">બેકઅપ ફાઈલ તમારા Google Drive કે OneDrive ફોલ્ડરમાં સેવ કરો. બીજા કમ્પ્યુટર કે મોબાઈલમાં આ એપ ખોલીને "રિસ્ટોર" કરશો એટલે બધો ડેટા આવી જશે.</p></div>
+  return `<p class="lab">એપ</p><h2>⚙️ <i>સેટિંગ</i></h2>${typeof nbSetBox === 'function' ? nbSetBox() : ''}<div class="box" id="setBk"><h3 style="margin-top:0">💾 બેકઅપ ફાઈલ</h3><p>કુલ ${N(DB.size)} નોંધ, ${N(COURT.size)} કોર્ટ કેસ. છેલ્લો બેકઅપ: ${S.lastBackup ? D(S.lastBackup) : 'હજુ લીધો નથી'}</p><div class="row"><button class="b p" id="bkDown">બેકઅપ ફાઈલ ડાઉનલોડ</button><label class="b">બેકઅપમાંથી રિસ્ટોર<input type="file" id="bkUp" accept=".json,.gz" hidden></label></div><p class="note">બેકઅપ ફાઈલ તમારા Google Drive કે OneDrive ફોલ્ડરમાં સેવ કરો. બીજા કમ્પ્યુટર કે મોબાઈલમાં આ એપ ખોલીને "રિસ્ટોર" કરશો એટલે બધો ડેટા આવી જશે.</p></div>
   <h3 id="setTh">🎨 થીમ</h3><div class="seg">${th.map(t => `<button data-th="${t[0]}" class="${S.theme === t[0] ? 'on' : ''}">${t[1]}</button>`).join('')}</div>
   <h3>અન્ય સેટિંગ</h3><div class="fg">${fl('પો.સ્ટે.નું નામ', `<input id="sPs" value="${esc(S.psName)}">`)}${fl('ગુ.ર.નં. ની શરૂઆત (પો.સ્ટે. કોડ)', `<input id="sPre" value="${esc(S.psPrefix)}">`)}${fl('આંકડા', `<select id="sDig"><option value="1" ${S.gujDigits ? 'selected' : ''}>ગુજરાતી (૧૨૩)</option><option value="0" ${!S.gujDigits ? 'selected' : ''}>English (123)</option></select>`)}</div>
   <div class="fg" style="grid-template-columns:1fr 1fr;margin-top:8px">${fl('હેડની યાદી (એક લીટીમાં એક; ક્રમ આ પ્રમાણે અહેવાલમાં આવશે)', `<textarea id="sHeads" style="min-height:200px">${esc(S.heads.join('\n'))}</textarea>`)}${fl('૯૦ દિવસની મુદતવાળા હેડ (૧૦ વર્ષ કે વધુ સજા); બાકીના ૬૦ દિવસ', `<textarea id="sH90" style="min-height:200px">${esc(S.heads90.join('\n'))}</textarea>`)}</div><div class="row" style="margin-top:8px"><button class="b p" id="sSave">સેટિંગ સેવ કરો</button></div>`; }
@@ -4271,7 +4271,7 @@ document.addEventListener('click', e => {
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#sMenu.on')) $('#sMenu').classList.remove('on'); });
 const TH = [['leaf', 'હળવી લીલી (સફેદ કાર્ડ)'], ['mac', 'MacBook ડાર્ક'], ['navy', 'નેવી ગોલ્ડ'], ['pearl', 'પર્લ ઇન્ડિગો'], ['claude', 'Claude જેવી']];
 let SM_TH = false;
-function sMenuDraw() { const m = $('#sMenu'); if (!m) return; const when = v => v ? new Date(v).toLocaleString('en-IN', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }) : '';
+function sMenuDraw() { const m = $('#sMenu'); if (!m) return; const when = v => { if (!v) return ''; const d = new Date(v); return N(pad2(d.getDate()) + '/' + pad2(d.getMonth() + 1) + ', ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes())); };
   const drv = DRV.on && DRV.needTap ? `<button class="mi warn" data-sm="drivenow"><i>☁️</i><span>Google Drive બેકઅપ બાકી છે<br><small>ચાલુ રાખવા એક વાર દબાવો</small></span><small>Drive પર બેકઅપ</small></button>`
     : `<button class="mi" data-sm="drive"><i>☁️</i><span>Google Drive બેકઅપ</span><small>${DRV.on ? 'ચાલુ' + (DRV.last ? ' · ' + when(DRV.last) : '') : 'બંધ'}</small></button>`;
   m.innerHTML = `<div class="mh">⚙️ સેટિંગ</div>
@@ -4279,7 +4279,6 @@ function sMenuDraw() { const m = $('#sMenu'); if (!m) return; const when = v => 
   <div class="thl ${SM_TH ? 'on' : ''}">${TH.map(x => `<button data-th="${x[0]}" class="${S.theme === x[0] ? 'on' : ''}">${S.theme === x[0] ? '✓ ' : ''}${x[1]}</button>`).join('')}</div><hr>
   <div class="mh">બેકઅપ</div>${drv}
   <button class="mi" data-sm="bkdown"><i>💾</i><span>બેકઅપ ફાઈલ ડાઉનલોડ</span><small>${S.lastBackup ? 'છેલ્લો ' + D(S.lastBackup) : 'હજુ નહીં'}</small></button>
-  ${navigator.canShare ? '<button class="mi" data-sm="bkshare"><i>📤</i><span>બેકઅપ શેર કરો</span></button>' : ''}
   <label class="mi"><i>♻️</i><span>બેકઅપમાંથી રિસ્ટોર</span><input type="file" id="smUp" accept=".json,.gz" hidden></label><hr>
   <button class="mi" data-sm="station"><i>🏢</i><span>સ્ટેશન · 🔒 PIN</span></button>
   <button class="mi" data-sm="all"><i>⚙️</i><span>બધાં સેટિંગ</span><small>▸</small></button>`; }
