@@ -4139,7 +4139,7 @@ async function nbLockCheck() { const H = document.documentElement; if (!window.N
 
 /* ---------- નોકરી બુકનો બેકઅપ ઇમ્પોર્ટ (એક વાર; કંઈ છોડાતું નથી) ---------- */
 let NBP = null;
-function nbImpBox() { return `<div class="box"><h3 style="margin-top:0">નોકરી બુક (ગુના રજીસ્ટર) નો ડેટા</h3><p>નોકરી બુકનો બેકઅપ (<b>crime-register-backup-….json</b> કે <b>.json.gz</b>) અહીં આપો. ગુના આ એપની નોંધ સાથે જોડાશે: ઉતારાની વિગત જ રહેશે, ખાલી ખાનાં નોકરી બુક પરથી ભરાશે, બંનેમાં જુદું હોય તે દરેક બાબત યાદીમાં બતાવાશે. માસિક વિગત, પ્રોહી, સેટિંગ, સ્ટેશનની વિગત પણ આવશે. સેવ કરતાં પહેલાં સારાંશ બતાવાશે.</p><div class="row"><label class="b p">નોકરી બુકનો બેકઅપ પસંદ કરો<input type="file" id="nbImpF" accept=".json,.gz,application/json,application/gzip" hidden></label><button class="b" id="nbImpLocal">આ બ્રાઉઝરમાં નોકરી બુકનો ડેટા શોધો</button></div></div>`; }
+function nbImpBox() { return ''; } /* ઈમ્પોર્ટ પાના પરથી કાઢ્યું; નોકરી બુકનો બેકઅપ ⚙️ સેટિંગ → બેકઅપમાંથી રિસ્ટોર થી આવે છે */
 async function nbBytesToText(buf) { const u = new Uint8Array(buf); if (u[0] === 0x1f && u[1] === 0x8b) { if (!window.DecompressionStream) throw new Error('આ બ્રાઉઝર .gz ખોલી શકતું નથી'); const s = new Blob([u]).stream().pipeThrough(new DecompressionStream('gzip')); return await new Response(s).text(); } return new TextDecoder().decode(u); }
 function nbReadLocalDb() { return new Promise((res, rej) => { if (!indexedDB.databases) { /* જૂનું બ્રાઉઝર: સીધું ખોલવાનો પ્રયત્ન */ }
   const q = indexedDB.open('nb_crime'); let fresh = false; q.onupgradeneeded = () => { fresh = true; }; q.onerror = () => rej(q.error);
